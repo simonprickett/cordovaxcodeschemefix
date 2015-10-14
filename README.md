@@ -33,4 +33,42 @@ TODO: Walkthrough
 
 ## Hook Configuration
 
-TODO: Describe hook script setup
+The Cordova hook setup used in this project is pretty simple, and consists of the following steps.
+
+### config.xml Changes
+
+In the Cordova config.xml file for the project, we add a `<hook>` element for the iOS platform only, and tell it which event we want to run the hook script for, and where the hook script lives and what its' name is:
+
+```
+...
+platform name="ios">
+  <hook type="after_platform_add" src="hooks/fix_xcode_schemes.rb" />
+  ...
+...
+```
+
+So in this case, we're saying for iOS only let's run `hooks/fix_xcode_schemes.rb` after the iOS platform is added.  This script will run after the user does:
+
+```
+cordova platform add ios
+```
+
+### Hook Script
+
+The file `hooks/fix_xcode_schemes.rb` needs to have execute permissions so that it can be run (think `chmod 755 hooks/fix_xcode_schemes.rb` - you won't need to do this as GitHub retains the permissions in the repo). Inside, the script looks like:
+
+```
+#!/usr/bin/env ruby
+require 'xcodeproj'
+xcproj = Xcodeproj::Project.open("platforms/ios/schemedemo.xcodeproj")
+xcproj.recreate_user_schemes
+xcproj.save
+```
+
+Which:
+
+* Tells the shell to use ruby to run the script
+* Uses the xcodeproj gem we installed earlier
+* Opens the Cordova CLI generated .xcodeproj file (you'd need to change the name here to match your project)
+* Programmatically makes Xcode recreate the scheme(s) for the project
+* Saves the project
