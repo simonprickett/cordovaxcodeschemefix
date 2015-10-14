@@ -6,11 +6,39 @@ Uses a Cordova build hook to set up Xcode schemes enabling iOS workflow without 
 
 If you use the Cordova CLI to create a new Cordova project, then you add the iOS platform to that project you can develop for iOS and use the Cordova CLI to launch the iOS Simulator and view your app during development.
 
-However, if you try and build your app using the xcodebuild command line tools (without ever going into Xcode itself) you will find that the xcodebuild tools hang.
+However, if you try and build your app using the xcodebuild command line tools (without ever going into Xcode itself) you will find that the xcodebuild tools hang.  You'll want to use xcodebuild when it's time to archive and sign your app for distribution to services such as HockeyApp.  Often, this process needs to happen in an automated way on a Continuous Integration server (say Jenkins or Circle CI).
 
-This is because by default, Cordova CLI created Xcode projects don't contain schemes... XCode configures these on first launch of a project.  However, these are then saved in files that live inside platforms/ios in your Cordova project, and you don't want to check platforms into source control as everything in there should be auto generated.
+This is because by default, Cordova CLI created Xcode projects don't contain schemes... XCode configures these on first launch of a project.  However, these changes are then saved in files that live inside platforms/ios in your Cordova project, and you don't want to check platforms into source control as everything in there should be auto generated.
 
 This repo shows a simple solution for this that allows Cordova projects to play more nicely in a Continuous Integration workflow.
+
+To demonstrate the problem, open up a Terminal and try:
+
+```
+cordova create someapp com.mycompany.someapp SomeApp
+cd someapp
+cordova platform add ios
+cordova build ios
+cd platforms/ios
+xcodebuild -list
+```
+
+Everything should work up to the `xcodebuild` command which outputs something like this and then hangs forever:
+
+```
+$ xcodebuild -list
+Information about project "SomeApp":
+    Targets:
+        SomeApp
+
+    Build Configurations:
+        Debug
+        Release
+
+    If no build configuration is specified and -scheme is not passed then "Release" is used.
+```
+
+This is because it is looking for schemes in the project, and doesn't find any.
 
 ## Solution
 
