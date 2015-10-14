@@ -29,7 +29,15 @@ sudo gem install xcodeproj
 
 ## Walkthrough
 
-TODO: Walkthrough
+To try this out...
+
+* Clone this repo somewhere, let's call that folder <repo>
+* Open up a Terminal
+* `cd <repo>/app`
+* `cordova platform add ios` (note this will also run the hook script to fix the schemes)
+* `cd platforms/ios`
+* `xcodebuild -list` (should no longer hang, and will list schemes)
+* `xcodebuild -sdk iphoneos -scheme schemedemo clean archive` (should now build the project)
 
 ## Hook Configuration
 
